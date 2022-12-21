@@ -15,13 +15,12 @@ export async function validateCategorie(req, res, next) {
     const { name } = req.body;
 
     try {
-        const categorieFound = await connectionDB.query
+        const categorieFound = (await connectionDB.query
             (
-            'SELECT * FROM categories WHERE name=$1;',
-            [name]
-        )
-        console.log(categorieFound.rowCount);
-        if (categorieFound.rowCount !== 0)
+                'SELECT * FROM categories WHERE name=$1;',
+                [name]
+            )).rowCount;
+        if (categorieFound)
             return res.status(409).send('Categoria já cadastrada');
     } catch (error) {
         console.log(error);

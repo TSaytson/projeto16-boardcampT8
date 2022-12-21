@@ -2,8 +2,8 @@ import { connectionDB } from "../database/db.js";
 
 export async function getCategories(req, res) {
     try {
-        const { rows } = await connectionDB.query('SELECT * FROM categories;');
-        res.send(rows).status(200);
+        const categories = (await connectionDB.query('SELECT * FROM categories;')).rows;
+        res.send(categories).status(200);
     } catch (error) {
         console.log(error);
         res.send(error.message).status(500);
