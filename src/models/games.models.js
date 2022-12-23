@@ -1,9 +1,9 @@
 import joi from 'joi';
 
 export const gameSchema = joi.object({
-    name: joi.string().required(),
+    name: joi.string().min(1).required(),
     image: joi.string().uri().required(),
-    stockTotal: joi.number().integer().required(),
+    stockTotal: joi.number().integer().min(1).required(),
     categoryId: joi.number().integer().required(),
-    pricePerDay: joi.number().integer().required()
-})
+    pricePerDay: joi.number().integer().min(1).required()
+});

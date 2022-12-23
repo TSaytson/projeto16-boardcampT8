@@ -10,7 +10,7 @@ export async function getCategories(req, res) {
     }
 }
 
-export async function postCategories(req, res) {
+export async function postCategorie(req, res) {
     const { name } = res.locals.categorie;
     try {
         await connectionDB.query('INSERT INTO categories (name) VALUES ($1);', [name]);

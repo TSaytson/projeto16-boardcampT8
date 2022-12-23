@@ -9,7 +9,7 @@ export async function validateCategorie(req, res, next) {
             (detail) => detail.message
         );
         console.log(errors);
-        return res.send(errors).status(400);
+        return res.status(400).send(errors);
     }
 
     const { name } = req.body;
