@@ -5,8 +5,8 @@ import {getCustomers, getCustomerById, postCustomer, putCustomer} from '../contr
 const router = Router();
 
 router.get('/customers', getCustomers);
-router.get('/customer/:id', getCustomerById);
-router.post('/customer', validateCustomer, postCustomer);
-router.put('/customer/:id', validateCustomer, putCustomer);
+router.get('/customers/:id', getCustomerById);
+router.post('/customers', validateCustomer, postCustomer);
+router.put('/customers/:id', validateCustomer, putCustomer);
 
 export default router;
