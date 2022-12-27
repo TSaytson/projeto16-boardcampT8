@@ -12,7 +12,7 @@ export async function postRent(req, res){
 
     try {
         const game = (await connectionDB.query(`SELECT 
-        ("pricePerDay") FROM games 
+        "pricePerDay", "stockTotal" FROM games 
         WHERE id=$1;`, [gameId])).rows[0];
         const originalPrice = 
         (daysRented) * (game.pricePerDay);
@@ -29,6 +29,10 @@ export async function postRent(req, res){
             originalPrice,
             delayFee
         ]);
+        console.log(game);
+        await connectionDB.query(`UPDATE games 
+        SET "stockTotal"=$1 WHERE id=$2;`, 
+        [--game.stockTotal, gameId]);
         return res.status(201).send(
             `Aluguel de ${rentDate} cadastrado`);
     } catch(error){
