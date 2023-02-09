@@ -83,6 +83,16 @@ export async function getRents(req, res){
     }
 }
 
+export async function postRentReturn(req, res){
+    const {rent} = res.locals;
+    try{
+ 
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).send(error.message);
+    }
+}
 export async function deleteRent(req, res){
     const {id} = req.params;
 

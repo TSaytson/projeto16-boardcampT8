@@ -1,5 +1,5 @@
 import { connectionDB } from "../database/db.js";
-import {rentSchema} from '../models/rent.models.js'
+import {rentSchema} from '../schemas/rent.schemas.js'
 import dayjs from 'dayjs';
 
 export async function validateRent(req, res, next){
@@ -20,14 +20,12 @@ export async function validateRent(req, res, next){
         const customerFound = (await connectionDB.query(`SELECT * FROM
          customers WHERE id=$1;`, [customerId])).rowCount;
         const gameFound = (await connectionDB.query(`SELECT * FROM 
-        games WHERE id=$1;`, [gameId])).rowCount;
-        const game = (await connectionDB.query(`SELECT * FROM 
         games WHERE id=$1;`, [gameId])).rows[0];
         if (!customerFound)
             return res.status(400).send('Cliente não encontrado');
         if (!gameFound)
             return res.status(400).send('Jogo não encontrado');
-        if (game.stockTotal < 1)
+        if (gameFound.stockTotal < 1)
             return res.status(400).send('Jogo esgotado');
     } catch( error){
         console.log(error);
@@ -50,12 +48,16 @@ export async function verifyRent(req, res, next){
 
     try{
         const rentFound = (await connectionDB.query(`SELECT * FROM 
-        rentals WHERE id=$1;`, [id])).rows;
-        if (!rentFound.length)
+        rentals WHERE id=$1;`, [id])).rows[0];
+        if (!rentFound)
             return res.status(404).send('Aluguel não encontrado');
         if (rentFound.returnDate)
             return res.status(400).send('Jogo já devolvido');
-        
+        rentFound.returnDate = dayjs(Date.now()).toDate();
+        console.log(
+            rentFound.returnDate.diff(rentFound.rentDate, 'day')
+        )
+        res.locals.rent = rentFound;
     } catch (error){
         console.log(error);
         res.status(500).send(error.message);
