@@ -25,7 +25,7 @@ export async function validateGame(req, res, next) {
             ('SELECT * FROM games WHERE name=$1',
                 [name])).rowCount;
         if (gameFound) {
-            return res.status(409).send('Jogo já cadastrado');
+            return res.status(409).send({message:'Jogo já cadastrado'});
         }
     } catch (error) {
         console.log(error);
