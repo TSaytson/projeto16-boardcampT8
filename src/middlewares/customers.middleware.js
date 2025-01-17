@@ -1,19 +1,25 @@
-import {customerSchema} from '../schemas/customer.schemas.js';
-import {connectionDB} from '../database/db.js';
+import { customerSchema, updateCustomerSchema } from '../schemas/customer.schemas.js';
+import { connectionDB } from '../database/db.js';
 
-export async function validateCustomer(req, res, next){
-    const validation = customerSchema.validate(
-        req.body, {abortEarly:false}
-    );
-    if (validation.error){
+export async function validateCustomer(req, res, next) {
+    let validation;
+    if (req.method === 'PUT') {
+        validation = updateCustomerSchema.validate(
+            req.body, { abortEarly: false })
+    } else {
+        validation = customerSchema.validate(
+            req.body, { abortEarly: false }
+        );
+    }
+    if (validation.error) {
         const errors = validation.error.details.map(
             (detail) => detail.message
         );
         console.log(errors);
         return res.status(400).send(errors);
     }
-    
-    const {name, phone, cpf, birthday} = req.body;
+
+    const { name, phone, cpf, birthday } = req.body;
     try {
         const customerFound = (await connectionDB.query
             (
