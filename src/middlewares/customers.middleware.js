@@ -1,5 +1,5 @@
+import { customersRepository } from '../repositories/customers.repository.js';
 import { customerSchema, updateCustomerSchema } from '../schemas/customer.schemas.js';
-import { connectionDB } from '../database/db.js';
 
 export async function validateCustomer(req, res, next) {
     let validation;
@@ -21,11 +21,7 @@ export async function validateCustomer(req, res, next) {
 
     const { name, phone, cpf, birthday } = req.body;
     try {
-        const customerFound = (await connectionDB.query
-            (
-                'SELECT * FROM customers WHERE cpf=$1;',
-                [cpf]
-            )).rowCount;
+        const customerFound = await customersRepository.findCustomerByCpf(cpf);
         if (customerFound && req.method !== 'PUT')
             return res.status(409).send('Cliente já cadastrado');
     } catch (error) {

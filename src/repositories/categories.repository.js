@@ -12,8 +12,13 @@ async function findCategoryById(id){
   return (await connectionDB.query(`SELECT * FROM categories WHERE id=$1;`, [id])).rowCount
 }
 
+async function findCategoryByName(name){
+  return (await connectionDB.query(`SELECT * FROM categories WHERE name=$1;`, [name])).rowCount
+}
+
 export const categoriesRepository = {
   findCategories,
   createCategorie,
-  findCategoryById
+  findCategoryById,
+  findCategoryByName
 }

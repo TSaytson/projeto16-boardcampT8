@@ -1,5 +1,6 @@
 import { gameSchema } from "../schemas/game.schemas.js";
 import { connectionDB } from "../database/db.js";
+import { gamesRepository } from "../repositories/games.repository.js";
 
 export async function validateGame(req, res, next) {
     const validation = gameSchema.validate(
@@ -21,9 +22,7 @@ export async function validateGame(req, res, next) {
         pricePerDay } = req.body;
 
     try {
-        const gameFound = (await connectionDB.query
-            ('SELECT * FROM games WHERE name=$1',
-                [name])).rowCount;
+        const gameFound = await gamesRepository.findGameByName(name);
         if (gameFound) {
             return res.status(409).send({message:'Jogo já cadastrado'});
         }

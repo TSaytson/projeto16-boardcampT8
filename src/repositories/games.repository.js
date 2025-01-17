@@ -8,6 +8,11 @@ async function findGames() {
     ON games."categoryId" = categories.id; `)).rows;
 }
 
+async function findGameById(id){
+  return (await connectionDB.query(`
+    SELECT * FROM games WHERE id=$1;`, [id])).rows[0];
+}
+
 async function findGamesLikeName(name){
   return (await connectionDB.query(
     `SELECT games.*,
@@ -16,6 +21,11 @@ async function findGamesLikeName(name){
     ON games."categoryId" = categories.id
     WHERE games.name ILIKE $1 || '%';`, [name]
   )).rows;
+}
+
+async function findGameByName(name){
+  return (await connectionDB.query(`
+    SELECT * FROM games WHERE name=$1`, [name])).rowCount;
 }
 
 async function createGame({ name, image, stockTotal, categoryId, pricePerDay }) {
@@ -27,6 +37,8 @@ async function createGame({ name, image, stockTotal, categoryId, pricePerDay }) 
 }
 export const gamesRepository = {
   findGames,
+  findGameById,
+  findGameByName,
   findGamesLikeName,
   createGame
 }

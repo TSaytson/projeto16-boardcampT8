@@ -1,4 +1,6 @@
-import { connectionDB } from "../database/db.js";
+import { customersRepository } from "../repositories/customers.repository.js";
+import { gamesRepository } from "../repositories/games.repository.js";
+import { rentalsRepository } from "../repositories/rentals.repository.js";
 import {rentSchema} from '../schemas/rent.schemas.js'
 import dayjs from 'dayjs';
 
@@ -17,10 +19,8 @@ export async function validateRent(req, res, next){
     const {customerId, gameId, daysRented} = req.body;
 
     try {
-        const customerFound = (await connectionDB.query(`SELECT * FROM
-         customers WHERE id=$1;`, [customerId])).rowCount;
-        const gameFound = (await connectionDB.query(`SELECT * FROM 
-        games WHERE id=$1;`, [gameId])).rows[0];
+        const customerFound = await customersRepository.findCustomerById(customerId);
+        const gameFound = await gamesRepository.findGameById(gameId);
         if (!customerFound)
             return res.status(400).send('Cliente não encontrado');
         if (!gameFound)
@@ -47,8 +47,7 @@ export async function verifyRent(req, res, next){
     const {id} = req.params;
 
     try{
-        const rentFound = (await connectionDB.query(`SELECT * FROM 
-        rentals WHERE id=$1;`, [id])).rows[0];
+        const rentFound = await rentalsRepository.findRentalById(id);
         if (!rentFound)
             return res.status(404).send('Aluguel não encontrado');
         if (rentFound.returnDate)

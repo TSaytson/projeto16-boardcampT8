@@ -1,5 +1,6 @@
 import { categorieSchema } from "../schemas/categorie.schemas.js";
 import { connectionDB } from "../database/db.js";
+import { categoriesRepository } from "../repositories/categories.repository.js";
 
 export async function validateCategorie(req, res, next) {
     const validation = categorieSchema.validate(
@@ -15,11 +16,7 @@ export async function validateCategorie(req, res, next) {
     const { name } = req.body;
 
     try {
-        const categorieFound = (await connectionDB.query
-            (
-                'SELECT * FROM categories WHERE name=$1;',
-                [name]
-            )).rowCount;
+        const categorieFound = await categoriesRepository.findCategoryByName(name);
         if (categorieFound)
             return res.status(409).send('Categoria já cadastrada');
     } catch (error) {

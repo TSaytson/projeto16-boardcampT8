@@ -16,6 +16,11 @@ async function findCustomersLikeCpf(cpf){
     customers WHERE cpf LIKE $1 || '%';`, [cpf])).rows;
 }
 
+async function findCustomerByCpf(cpf){
+  return (await connectionDB.query(`SELECT * FROM
+    customers WHERE cpf = $1;`, [cpf])).rowCount;
+}
+
 async function findCustomers(){
   return (await connectionDB.query(`SELECT * FROM
     customers;`)).rows;
@@ -35,6 +40,7 @@ async function updateCustomer({id, name, phone, birthday}){
 export const customersRepository = {
   findCustomers,
   findCustomersLikeCpf,
+  findCustomerByCpf,
   createCustomer,
   findCustomerById,
   updateCustomer
