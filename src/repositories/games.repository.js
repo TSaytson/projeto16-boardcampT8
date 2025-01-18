@@ -35,10 +35,11 @@ async function createGame({ name, image, stockTotal, categoryId, pricePerDay }) 
   VALUES ($1, $2, $3, $4, $5);`,
     [name, image, stockTotal, categoryId, pricePerDay]);
 }
+
 export const gamesRepository = {
   findGames,
   findGameById,
   findGameByName,
   findGamesLikeName,
-  createGame
+  createGame,
 }

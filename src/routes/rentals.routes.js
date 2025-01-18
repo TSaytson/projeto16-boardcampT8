@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { validateRent, verifyRent } from "../middlewares/rents.middleware.js";
-import {postRent, getRents, deleteRent, postRentReturn} from '../controllers/rents.controller.js';
+import { validateRent, verifyRent } from "../middlewares/rentals.middleware.js";
+import {getRents, postRentReturn, deleteRental, postRental} from '../controllers/rentals.controller.js';
 
 const router = Router();
 
 router.get('/rentals', getRents);
-router.post('/rentals', validateRent, postRent);
+router.post('/rentals', validateRent, postRental);
 router.post('/rentals/:id/return', verifyRent, postRentReturn);
-router.delete('/rentals/:id', verifyRent, deleteRent);
+router.delete('/rentals/:id', verifyRent, deleteRental);
 
 export default router;

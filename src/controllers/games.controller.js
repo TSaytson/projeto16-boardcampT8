@@ -16,7 +16,7 @@ export async function postGame(req, res) {
     const { name, image, stockTotal, categoryId, pricePerDay } = res.locals.game
     try {
         await gamesService.postGame({name, image, stockTotal, categoryId, pricePerDay})
-        return res.status(201).send({message: `Jogo ${res.locals.game.name} adicionado`});
+        return res.status(201).send({message: `Jogo ${name} adicionado`});
     } catch (error) {
         console.log(error);
         error.status ? res.status(error.status).send(error) :
