@@ -3,7 +3,7 @@ import JoiDate from '@joi/date'
 
 const joi = JoiBase.extend(JoiDate)
 
-export const customerSchema = joi.object({
+export const createCustomerSchema = joi.object({
     name: joi.string().min(3).required(),
     phone: joi.string().min(10).max(11).regex(/^\d+$/).required(),
     cpf: joi.string().min(11).regex(/^\d+$/).required(),

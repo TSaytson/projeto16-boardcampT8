@@ -1,6 +1,9 @@
 import { customersRepository } from "../repositories/customers.repository.js"
 
 async function postCustomer({ name, phone, cpf, birthday }) {
+  const customerFound = await customersRepository.findCustomerByCpf(cpf);
+  if (customerFound)
+    throw ({ message: 'Cliente já cadastrado', status: 409 });
   return await customersRepository.createCustomer({ name, phone, cpf, birthday })
 }
 

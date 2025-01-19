@@ -5,6 +5,9 @@ async function getCategories(){
 }
 
 async function postCategorie(name){
+  const categorieFound = await categoriesRepository.findCategoryByName(name);
+  if (categorieFound)
+      throw ({message: 'Categoria já cadastrada', status:409});
   return categoriesRepository.createCategorie(name);
 }
 

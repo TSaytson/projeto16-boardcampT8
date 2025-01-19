@@ -31,6 +31,12 @@ async function findCustomerById(id){
     customers WHERE id=$1;`, [id])).rows[0]
 }
 
+async function customerNameView(){
+  return (await connectionDB.query(`
+    SELECT id, name FROM customers WHERE id=$1;`,
+        [rentals[i].customerId])).rows[0];
+}
+
 async function updateCustomer({id, name, phone, birthday}){
   return await connectionDB.query(`UPDATE customers SET name=$1,
     phone=$2, birthday=$3 WHERE id=$4`,
@@ -39,6 +45,7 @@ async function updateCustomer({id, name, phone, birthday}){
 
 export const customersRepository = {
   findCustomers,
+  customerNameView,
   findCustomersLikeCpf,
   findCustomerByCpf,
   createCustomer,

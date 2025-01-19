@@ -1,16 +1,17 @@
 import { customersService } from "../services/customers.service.js";
 
 export async function postCustomer(req, res) {
-    const { name, phone, cpf, birthday } = res.locals.customer;
+    const { name, phone, cpf, birthday } = req.body;
     try {
         await customersService.postCustomer({name, phone, cpf, birthday})
         return res.status(201).send({
             message:
-                `Cliente ${res.locals.customer.name} cadastrado`
+                `Cliente ${name} cadastrado`
         });
     } catch (error) {
         console.log(error);
-        return res.status(500).send(error.message);
+        error.status ? res.status(error.status).send(error) :
+        res.status(500).send(error.message);;
     }
 }
 
@@ -40,7 +41,7 @@ export async function getCustomerById(req, res) {
 }
 
 export async function putCustomer(req, res) {
-    const { name, phone, birthday } = res.locals.customer;
+    const { name, phone, birthday } = req.body;
     const { id } = req.params;
     try {
         await customersService.putCustomer({id, name, phone, birthday});

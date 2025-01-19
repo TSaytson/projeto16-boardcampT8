@@ -13,7 +13,7 @@ export async function getGames(req, res) {
 }
 
 export async function postGame(req, res) {
-    const { name, image, stockTotal, categoryId, pricePerDay } = res.locals.game
+    const { name, image, stockTotal, categoryId, pricePerDay } = req.body;
     try {
         await gamesService.postGame({name, image, stockTotal, categoryId, pricePerDay})
         return res.status(201).send({message: `Jogo ${name} adicionado`});

@@ -10,9 +10,91 @@ async function createRental({
     customerId, gameId, rentDate, daysRented, returnDate, originalPrice, delayFee
   ]);
 }
+
+async function findRentalsOnly(){
+  return (await connectionDB.query(`SELECT * FROM 
+    rentals;`)).rows;
+}
+
+async function findRentals(){
+  return (await connectionDB.query(`SELECT rentals.*,
+    jsonb_build_object(
+    'id', customers.id,
+    'name', customers.name
+    ) AS customer,
+    jsonb_build_object(
+    'id', games.id,
+    'name', games.name,
+    'categoryId', games."categoryId",
+    'categoryName', categories.name
+    ) AS game
+    FROM rentals
+    JOIN customers ON rentals."customerId"=customers.id
+    JOIN games ON rentals."gameId"=games.id
+    JOIN categories ON games."categoryId"=categories.id;`)).rows;
+}
+
 async function findRentalById(id) {
   return (await connectionDB.query(`
     SELECT * FROM rentals WHERE id=$1;`, [id])).rows[0];
+}
+
+async function findRentalsByCustomerIdGameId({customerId, gameId}){
+  return (await connectionDB.query(`SELECT rentals.*,
+    jsonb_build_object(
+    'id', customers.id,
+    'name', customers.name
+    ) AS customer,
+    jsonb_build_object(
+    'id', games.id,
+    'name', games.name,
+    'categoryId', games."categoryId",
+    'categoryName', categories.name
+    ) AS game
+    FROM rentals
+    JOIN customers ON rentals."customerId"=customers.id
+    JOIN games ON rentals."gameId"=games.id
+    JOIN categories ON games."categoryId"=categories.id
+    WHERE "customerId"=$1 AND "gameId"=$2;`,
+[customerId, gameId])).rows;
+}
+
+async function findRentalsByCustomerId(customerId){
+  return (await connectionDB.query(`SELECT rentals.*,
+    jsonb_build_object(
+    'id', customers.id,
+    'name', customers.name
+    ) AS customer,
+    jsonb_build_object(
+    'id', games.id,
+    'name', games.name,
+    'categoryId', games."categoryId",
+    'categoryName', categories.name
+    ) AS game
+    FROM rentals
+    JOIN customers ON rentals."customerId"=customers.id
+    JOIN games ON rentals."gameId"=games.id
+    JOIN categories ON games."categoryId"=categories.id
+    WHERE "customerId"=$1;`, [customerId])).rows;
+}
+
+async function findRentalsByGameId(gameId){
+  return (await connectionDB.query(`SELECT rentals.*,
+    jsonb_build_object(
+    'id', customers.id,
+    'name', customers.name
+    ) AS customer,
+    jsonb_build_object(
+    'id', games.id,
+    'name', games.name,
+    'categoryId', games."categoryId",
+    'categoryName', categories.name
+    ) AS game
+    FROM rentals
+    JOIN customers ON rentals."customerId"=customers.id
+    JOIN games ON rentals."gameId"=games.id
+    JOIN categories ON games."categoryId"=categories.id
+    WHERE "gameId"=$1;`, [gameId])).rows;
 }
 
 async function deleteRental(id) {
@@ -20,7 +102,7 @@ async function deleteRental(id) {
     WHERE id=$1;`, [id]);
 }
 
-async function findRentalsByGameId(gameId) {
+async function findOpenRentalsByGameId(gameId) {
   return (await connectionDB.query(`
     SELECT * FROM rentals WHERE 
     rentals."gameId"=$1 AND "returnDate" IS NULL;`, [gameId])).rows;
@@ -28,8 +110,12 @@ async function findRentalsByGameId(gameId) {
 
 export const rentalsRepository = {
   createRental,
+  findRentalsOnly,
+  findRentals,
   findRentalById,
-  deleteRental,
+  findRentalsByCustomerIdGameId,
+  findRentalsByCustomerId,
   findRentalsByGameId,
-
+  findOpenRentalsByGameId,
+  deleteRental,
 }

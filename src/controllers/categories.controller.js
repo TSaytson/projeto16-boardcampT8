@@ -11,12 +11,13 @@ export async function getCategories(req, res) {
 }
 
 export async function postCategorie(req, res) {
-    const { name } = res.locals.categorie;
+    const { name } = req.body;
     try {
-        categoriesService.postCategorie(name);
+        await categoriesService.postCategorie(name);
         res.send({message: `Categoria ${name} criada`}).status(201);
     } catch (error) {
         console.log(error);
-        res.send(error.message).status(500);
+        error.status ? res.status(error.status).send(error) :
+        res.status(500).send(error.message);
     }
 }

@@ -1,8 +1,12 @@
+import dayjs from "dayjs";
 import { customersRepository } from "../repositories/customers.repository.js";
 import { gamesRepository } from "../repositories/games.repository.js";
 import { rentalsRepository } from "../repositories/rentals.repository.js"
 
 async function postRental({ customerId, gameId, rentDate, daysRented, returnDate, delayFee }) {
+  const customerFound = await customersRepository.findCustomerById(customerId);
+  if (!customerFound)
+    throw ({ message: 'Cliente não encontrado', status: 400 });
   const gameFound = await gamesRepository.findGameById(gameId);
   if (!gameFound)
     throw ({ message: 'Jogo não encontrado', status: 400 });
@@ -17,32 +21,44 @@ async function postRental({ customerId, gameId, rentDate, daysRented, returnDate
   })
 }
 
-async function getRentals({customerId, gameId}) {
-  let rentals;
+async function getRentals({ customerId, gameId }) {
   if (gameId && customerId) {
-    rentals = (await connectionDB.query(`SELECT * FROM 
-            rentals WHERE "customerId"=$1 AND "gameId"=$2;`,
-      [customerId, gameId])).rows;
+    return await rentalsRepository.findRentalsByCustomerIdGameId({ customerId, gameId })
   }
   else if (customerId) {
-    rentals = (await connectionDB.query(`SELECT * FROM 
-            rentals WHERE "customerId"=$1;`, [customerId])).rows;
+    return await rentalsRepository.findRentalsByCustomerId(customerId);
   }
   else if (gameId) {
-    rentals = (await connectionDB.query(`SELECT * FROM 
-            rentals WHERE "gameId"=$1;`, [gameId])).rows;
+    return await rentalsRepository.findRentalsByGameId(gameId);
   }
   else {
-    rentals = (await connectionDB.query(`SELECT * FROM 
-            rentals;`)).rows;
+    return await rentalsRepository.findRentals();
   }
+}
+
+async function rentalReturn(rentalId) {
+  const rentalFound = await rentalsRepository.findRentalById(rentalId);
+  if (!rentalFound)
+    throw({message: 'Aluguel não encontrado', status: 400});
+  if (rentalFound.returnDate)
+    throw ({message: 'Jogo já devolvido', status: 400});
+  const gameRented = await gamesRepository.findGameById(rentalFound.gameId);
+  console.log(rentalFound)
+  rentalFound.returnDate = dayjs(Date.now()).add(2, 'days');
+  rentalFound.delayFee =
+    
+  console.log(rentalFound.delayFee);
+  return rentalFound;
+  
 }
 
 async function deleteRental(id) {
   return await rentalsRepository.deleteRental(id);
 }
+
 export const rentalsService = {
   postRental,
   getRentals,
+  rentalReturn,
   deleteRental
 }
