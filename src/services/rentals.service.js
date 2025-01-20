@@ -39,7 +39,7 @@ async function getRentals({ customerId, gameId }) {
 async function rentalReturn(rentalId) {
   const rentalFound = await rentalsRepository.findRentalById(rentalId);
   if (!rentalFound)
-    throw ({ message: 'Aluguel não encontrado', status: 400 });
+    throw ({ message: 'Aluguel não encontrado', status: 404 });
   if (rentalFound.returnDate)
     throw ({ message: 'Jogo já devolvido', status: 400 });
   const gameRented = await gamesRepository.findGameById(rentalFound.gameId);
@@ -55,7 +55,13 @@ async function rentalReturn(rentalId) {
 }
 
 async function deleteRental(id) {
+  const rentalFound = await rentalsRepository.findRentalById(id);
+  if (!rentalFound)
+    throw ({ message: 'Aluguel inexistente', status: 404 })
+  if (!rentalFound.returnDate)
+    throw ({ message: 'Aluguel em aberto', status: 400 })
   return await rentalsRepository.deleteRental(id);
+
 }
 
 export const rentalsService = {

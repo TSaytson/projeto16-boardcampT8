@@ -51,6 +51,7 @@ export async function deleteRental(req, res) {
         return res.sendStatus(204);
     } catch (error) {
         console.log(error);
+        error.status ? res.status(error.status).send(error) :
         res.status(500).send(error.message);
     }
 }
