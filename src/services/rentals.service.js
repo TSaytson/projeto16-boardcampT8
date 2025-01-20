@@ -10,7 +10,7 @@ async function postRental({ customerId, gameId, rentDate, daysRented, returnDate
   const gameFound = await gamesRepository.findGameById(gameId);
   if (!gameFound)
     throw ({ message: 'Jogo não encontrado', status: 400 });
-  const gameRentals = await rentalsRepository.findRentalsByGameId(gameId);
+  const gameRentals = await rentalsRepository.findOpenRentalsByGameId(gameId);
   if (gameRentals.length >= gameFound.stockTotal)
     throw ({ message: 'Jogo esgotado', status: 400 })
   const originalPrice =
@@ -39,17 +39,19 @@ async function getRentals({ customerId, gameId }) {
 async function rentalReturn(rentalId) {
   const rentalFound = await rentalsRepository.findRentalById(rentalId);
   if (!rentalFound)
-    throw({message: 'Aluguel não encontrado', status: 400});
+    throw ({ message: 'Aluguel não encontrado', status: 400 });
   if (rentalFound.returnDate)
-    throw ({message: 'Jogo já devolvido', status: 400});
+    throw ({ message: 'Jogo já devolvido', status: 400 });
   const gameRented = await gamesRepository.findGameById(rentalFound.gameId);
-  console.log(rentalFound)
-  rentalFound.returnDate = dayjs(Date.now()).add(2, 'days');
-  rentalFound.delayFee =
-    
-  console.log(rentalFound.delayFee);
-  return rentalFound;
-  
+  rentalFound.returnDate = dayjs(Date.now());
+  const dateToBeReturned = dayjs(rentalFound.rentDate).add(rentalFound.daysRented, 'days');
+  const diffDays = (dayjs(rentalFound.returnDate).diff(dayjs(dateToBeReturned), 'days'))
+  if (diffDays > 0)
+    rentalFound.delayFee = diffDays * gameRented.pricePerDay;
+
+  await rentalsRepository.updateRental(rentalFound);
+  return gameRented;
+
 }
 
 async function deleteRental(id) {

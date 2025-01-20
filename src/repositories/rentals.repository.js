@@ -97,6 +97,13 @@ async function findRentalsByGameId(gameId){
     WHERE "gameId"=$1;`, [gameId])).rows;
 }
 
+async function updateRental({id, returnDate, delayFee}){
+  return await connectionDB.query(`
+    UPDATE rentals SET
+    "returnDate"=$1, "delayFee"=$2
+    WHERE id=$3`, [returnDate, delayFee, id])
+}
+
 async function deleteRental(id) {
   return await connectionDB.query(`DELETE FROM rentals 
     WHERE id=$1;`, [id]);
@@ -116,6 +123,7 @@ export const rentalsRepository = {
   findRentalsByCustomerIdGameId,
   findRentalsByCustomerId,
   findRentalsByGameId,
+  updateRental,
   findOpenRentalsByGameId,
   deleteRental,
 }
